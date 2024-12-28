@@ -67,3 +67,33 @@
     )
   )
 )
+
+;; Public Functions - Asset Management
+(define-public (create-asset 
+  (total-supply uint) 
+  (fractional-shares uint)
+  (metadata-uri (string-utf8 256))
+)
+  (begin 
+    (asserts! (> total-supply u0) ERR-INVALID-INPUT)
+    (asserts! (> fractional-shares u0) ERR-INVALID-INPUT)
+    (asserts! (is-valid-metadata-uri metadata-uri) ERR-INVALID-INPUT)
+    
+    (let ((asset-id (var-get next-asset-id)))
+      (map-set asset-registry 
+        {asset-id: asset-id}
+        {
+          owner: tx-sender,
+          total-supply: total-supply,
+          fractional-shares: fractional-shares,
+          metadata-uri: metadata-uri,
+          is-transferable: true
+        }
+      )
+      
+      (try! (nft-mint? asset-ownership-token asset-id tx-sender))
+      (var-set next-asset-id (+ asset-id u1))
+      (ok asset-id)
+    )
+  )
+)
