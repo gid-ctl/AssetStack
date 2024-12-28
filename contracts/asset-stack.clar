@@ -20,3 +20,23 @@
 
 ;; Data Variables
 (define-data-var next-asset-id uint u1)
+
+;; Data Maps
+(define-map asset-registry 
+  {asset-id: uint} 
+  {
+    owner: principal,
+    total-supply: uint,
+    fractional-shares: uint,
+    metadata-uri: (string-utf8 256),
+    is-transferable: bool
+  }
+)
+
+(define-map compliance-status 
+  {asset-id: uint, user: principal} 
+  {is-approved: bool}
+)
+
+;; NFT Definition
+(define-non-fungible-token asset-ownership-token uint)
