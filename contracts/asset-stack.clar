@@ -97,3 +97,22 @@
     )
   )
 )
+
+(define-public (transfer-fractional-ownership 
+  (asset-id uint) 
+  (to-principal principal) 
+  (amount uint)
+)
+  (let (
+    (asset (unwrap! (map-get? asset-registry {asset-id: asset-id}) ERR-INVALID-ASSET))
+    (sender tx-sender)
+  )
+    (asserts! (is-valid-asset-id asset-id) ERR-INVALID-INPUT)
+    (asserts! (is-valid-principal to-principal) ERR-INVALID-INPUT)
+    (asserts! (get is-transferable asset) ERR-UNAUTHORIZED)
+    (asserts! (is-compliance-check-passed asset-id to-principal) ERR-COMPLIANCE-CHECK-FAILED)
+    
+    (try! (nft-transfer? asset-ownership-token asset-id sender to-principal))
+    (ok true)
+  )
+)
