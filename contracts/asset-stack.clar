@@ -40,3 +40,30 @@
 
 ;; NFT Definition
 (define-non-fungible-token asset-ownership-token uint)
+
+;; Private Functions - Validation
+(define-private (is-valid-metadata-uri (uri (string-utf8 256)))
+  (and 
+    (> (len uri) u0)
+    (<= (len uri) u256)
+  )
+)
+
+(define-private (is-valid-asset-id (asset-id uint))
+  (> asset-id u0)
+)
+
+(define-private (is-valid-principal (user principal))
+  (not (is-eq user CONTRACT-OWNER))
+)
+
+(define-private (is-compliance-check-passed 
+  (asset-id uint) 
+  (user principal)
+) 
+  (default-to false 
+    (get is-approved 
+      (map-get? compliance-status {asset-id: asset-id, user: user})
+    )
+  )
+)
