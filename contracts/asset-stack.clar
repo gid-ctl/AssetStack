@@ -116,3 +116,28 @@
     (ok true)
   )
 )
+
+;; Public Functions - Compliance Management
+(define-public (set-compliance-status 
+  (asset-id uint) 
+  (user principal) 
+  (is-approved bool)
+)
+  (begin
+    (asserts! (is-valid-asset-id asset-id) ERR-INVALID-INPUT)
+    (asserts! (is-valid-principal user) ERR-INVALID-INPUT)
+    (asserts! (is-eq tx-sender CONTRACT-OWNER) ERR-UNAUTHORIZED)
+    
+    (map-set compliance-status 
+      {asset-id: asset-id, user: user} 
+      {is-approved: is-approved}
+    )
+    
+    (ok is-approved)
+  )
+)
+
+;; Read-only Functions
+(define-read-only (get-asset-details (asset-id uint))
+  (map-get? asset-registry {asset-id: asset-id})
+)
